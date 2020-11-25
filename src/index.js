@@ -1,17 +1,58 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+
+
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = { lat: null, long: null, errorMessage: '' };
+
+        window.navigator.geolocation.getCurrentPosition(
+            position => {
+                this.setState({ lat: position.coords.latitude });
+                this.setState({ long: position.coords.longitude });
+            },
+            err => {
+                this.setState({
+                    errorMessage: err.message
+                });
+            }
+        );
+    }
+
+
+    render() {
+        if (this.state.errorMessage && !(this.state.lat && this.state.long)) {
+            return (
+                <div>
+                    <h1>
+                        Error: {this.state.errorMessage}
+                    </h1>
+                </div>
+            );
+        }
+
+        if (!this.state.errorMessage && (this.state.lat && this.state.long)) {
+            return (
+                <div>
+                    <h1>
+                        Latidude: {this.state.lat}
+                    </h1>
+                    <h1>
+                        Longitude: {this.state.long}
+                    </h1>
+                </div>
+            );
+        }
+
+        return (
+            <div><h1>Loading!</h1></div>
+        );
+    }
+}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <App />,
+    document.querySelector('#root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
